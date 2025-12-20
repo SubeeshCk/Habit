@@ -1,0 +1,64 @@
+.btn-notification-request {
+  background-color: var(--accent-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-notification-request:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.notification-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-toggle.enabled {
+  color: var(--success);
+}
+
+.notification-toggle.enabled:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
+}
+
+.notification-toggle.disabled {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.notification-toggle.disabled:hover {
+  background-color: var(--bg-tertiary);
+  opacity: 1;
+}
+
+.notification-status {
+  font-size: 20px;
+  padding: 8px;
+  cursor: default;
+}
+
+.notification-status.granted {
+  color: var(--success);
+}
+
+.notification-status.denied {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+

@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 // Connect to database
-connectDB();
+await connectDB();
 
 // Middleware
 app.use(cors());

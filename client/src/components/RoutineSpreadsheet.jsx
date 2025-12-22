@@ -8,8 +8,16 @@ const RoutineSpreadsheet = ({ routine, onUpdate, onDelete, onEdit }) => {
   const [currentWeek, setCurrentWeek] = useState(getCurrentWeek());
   const [loading, setLoading] = useState(false);
 
-  // Sort tasks by start time
-  const sortedTasks = [...routine.tasks].sort((a, b) => {
+  // Local state for optimistic updates
+  const [localTasks, setLocalTasks] = useState(routine.tasks);
+
+  // Sync local state when routine prop updates
+  useEffect(() => {
+    setLocalTasks(routine.tasks);
+  }, [routine.tasks]);
+
+  // Use localTasks instead of routine.tasks for rendering
+  const sortedTasks = [...localTasks].sort((a, b) => {
     const timeA = a.startTime.replace(':', '');
     const timeB = b.startTime.replace(':', '');
     return timeA.localeCompare(timeB);
@@ -59,24 +67,44 @@ const RoutineSpreadsheet = ({ routine, onUpdate, onDelete, onEdit }) => {
   };
 
   const toggleTaskCompletion = async (taskId, date) => {
-    setLoading(true);
-    try {
-      const task = routine.tasks.find(t => t._id === taskId || t.id === taskId);
-      const isCompleted = isTaskCompleted(task, date);
-      const dateStr = formatLocalDate(date);
+    // 1. Calculate new state optimistically
+    const dateStr = formatLocalDate(date);
+    const taskIndex = localTasks.findIndex(t => (t._id || t.id) === taskId);
+    if (taskIndex === -1) return;
 
+    const task = localTasks[taskIndex];
+    const isCompleted = isTaskCompleted(task, date);
+
+    // Create new completed dates array
+    let newCompletedDates;
+    if (isCompleted) {
+      newCompletedDates = task.completedDates.filter(d => {
+        const compareDate = d instanceof Date ? d : new Date(d);
+        return formatLocalDate(compareDate) !== dateStr;
+      });
+    } else {
+      newCompletedDates = [...task.completedDates, new Date(date)];
+    }
+
+    // Update local state immediately
+    const newTasks = [...localTasks];
+    newTasks[taskIndex] = { ...task, completedDates: newCompletedDates };
+    setLocalTasks(newTasks);
+
+    // 2. Perform API Call in background
+    try {
       if (isCompleted) {
         await routineAPI.uncompleteTask(routine._id, taskId, dateStr);
       } else {
         await routineAPI.completeTask(routine._id, taskId, dateStr);
       }
-
+      // Success: Trigger parent update to ensure data consistency
       onUpdate();
     } catch (error) {
       console.error('Error toggling task completion:', error);
       alert('Failed to update task completion');
-    } finally {
-      setLoading(false);
+      // Revert on error
+      setLocalTasks(routine.tasks);
     }
   };
 

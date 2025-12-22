@@ -36,6 +36,9 @@ const routineSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Add index for userId queries
+routineSchema.index({ userId: 1 });
+
 const Routine = mongoose.model('Routine', routineSchema);
 
 export default Routine;

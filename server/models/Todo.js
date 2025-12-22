@@ -22,6 +22,9 @@ const todoSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Add index for user queries
+todoSchema.index({ user: 1 });
+
 const Todo = mongoose.model('Todo', todoSchema);
 
 export default Todo;

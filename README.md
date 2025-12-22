@@ -29,4 +29,20 @@ It features strict history locking, smart reminders, and a distraction-free inte
 - bcryptjs
 
 ## Project Structure
-
+Habit/
+├── client/ # React frontend
+│ ├── src/
+│ │ ├── components/
+│ │ ├── pages/
+│ │ ├── context/
+│ │ ├── services/
+│ │ └── styles/
+│ └── package.json
+├── server/ # Express backend
+│ ├── models/
+│ ├── routes/
+│ ├── middleware/
+│ ├── config/
+│ └── server.js
+├── package.json
+└── vercel.json

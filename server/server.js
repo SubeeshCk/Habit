@@ -10,8 +10,16 @@ dotenv.config();
 
 const app = express();
 
-// Connect to database
-await connectDB();
+// Database connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ message: 'Database connection failed', error: error.message });
+  }
+});
 
 // Middleware
 app.use(cors());

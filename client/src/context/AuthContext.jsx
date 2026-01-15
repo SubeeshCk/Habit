@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
+
     if (token && storedUser) {
       setUser(JSON.parse(storedUser));
       // Verify token is still valid
@@ -55,9 +55,10 @@ export const AuthProvider = ({ children }) => {
       });
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error);
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || error.message || 'Login failed'
       };
     }
   };
@@ -79,9 +80,10 @@ export const AuthProvider = ({ children }) => {
       });
       return { success: true };
     } catch (error) {
+      console.error('Signup error:', error);
       return {
         success: false,
-        message: error.response?.data?.message || 'Signup failed'
+        message: error.response?.data?.message || error.message || 'Signup failed'
       };
     }
   };
@@ -102,5 +104,3 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-

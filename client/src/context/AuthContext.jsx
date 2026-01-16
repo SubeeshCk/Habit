@@ -18,21 +18,30 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-
+    
     if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-      // Verify token is still valid
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Error parsing stored user', e);
+      }
+      
+      // We have a cached user, so we can stop showing the global "Loading..." 
+      // and let individual pages show their own loading/skeletons while we verify.
+      setLoading(false);
+
+      // Verify token in background
       authAPI.getMe()
         .then(res => {
           setUser(res.data);
           localStorage.setItem('user', JSON.stringify(res.data));
         })
         .catch(() => {
+          // Only if the token is actually invalid do we logout
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setUser(null);
-        })
-        .finally(() => setLoading(false));
+        });
     } else {
       setLoading(false);
     }
